@@ -107,4 +107,44 @@ public class BookController {
         return bookService.listNewestComments(bookId);
     }
 
+    /**
+     * 小说内容相关信息查询接口
+     */
+    @Operation(summary = "小说内容相关信息查询接口")
+    @GetMapping("content/{chapterId}")
+    public RestResp<BookContentAboutRespDto> getBookContentAbout(
+            @Parameter(description = "章节ID") @PathVariable("chapterId") Long chapterId) {
+        return bookService.getBookContentAbout(chapterId);
+    }
+
+    /**
+     * 小说章节列表查询接口
+     */
+    @Operation(summary = "小说章节列表查询接口")
+    @GetMapping("chapter/list")
+    public RestResp<List<BookChapterRespDto>> listChapters(
+            @Parameter(description = "小说ID") Long bookId) {
+        return bookService.listChapters(bookId);
+    }
+
+    /**
+     * 获取上一章节ID接口
+     */
+    @Operation(summary = "获取上一章节ID接口")
+    @GetMapping("pre_chapter_id/{chapterId}")
+    public RestResp<Long> getPreChapterId(
+            @Parameter(description = "章节ID") @PathVariable("chapterId") Long chapterId) {
+        return bookService.getPreChapterId(chapterId);
+    }
+
+    /**
+     * 获取下一章节ID接口
+     */
+    @Operation(summary = "获取下一章节ID接口")
+    @GetMapping("next_chapter_id/{chapterId}")
+    public RestResp<Long> getNextChapterId(
+            @Parameter(description = "章节ID") @PathVariable("chapterId") Long chapterId) {
+        return bookService.getNextChapterId(chapterId);
+    }
+
 }

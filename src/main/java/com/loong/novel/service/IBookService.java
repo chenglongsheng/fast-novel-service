@@ -45,4 +45,12 @@ public interface IBookService {
     RestResp<BookChapterAboutRespDto> getLastChapterAbout(Long bookId);
 
     RestResp<BookCommentRespDto> listNewestComments(Long bookId);
+
+    RestResp<BookContentAboutRespDto> getBookContentAbout(Long chapterId);
+
+    RestResp<List<BookChapterRespDto>> listChapters(Long bookId);
+
+    RestResp<Long> getPreChapterId(Long chapterId);
+
+    RestResp<Long> getNextChapterId(Long chapterId);
 }
