@@ -8,6 +8,7 @@ import com.loong.novel.dto.req.ChapterAddReqDto;
 import com.loong.novel.dto.req.ChapterUpdateReqDto;
 import com.loong.novel.dto.resp.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -36,4 +37,12 @@ public interface IBookService {
     RestResp<Void> updateBookChapter(Long chapterId, ChapterUpdateReqDto dto);
 
     RestResp<Void> deleteBookChapter(Long chapterId);
+
+    RestResp<BookInfoRespDto> getBookById(Long bookId);
+
+    RestResp<List<BookInfoRespDto>> listRecBooks(Long bookId) throws NoSuchAlgorithmException;
+
+    RestResp<BookChapterAboutRespDto> getLastChapterAbout(Long bookId);
+
+    RestResp<BookCommentRespDto> listNewestComments(Long bookId);
 }
