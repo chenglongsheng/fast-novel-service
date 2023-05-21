@@ -1,11 +1,14 @@
 package com.loong.novel.manager.cache;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.loong.novel.core.constant.CacheConsts;
 import com.loong.novel.core.constant.DatabaseConsts;
 import com.loong.novel.dao.entity.AuthorInfo;
 import com.loong.novel.dao.mapper.AuthorInfoMapper;
 import com.loong.novel.dto.AuthorInfoDto;
 import jakarta.annotation.Resource;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -23,6 +26,8 @@ public class AuthorInfoCacheManager {
     /**
      * 查询作家信息，并放入缓存中
      */
+    @Cacheable(cacheManager = CacheConsts.REDIS_CACHE_MANAGER,
+            value = CacheConsts.AUTHOR_INFO_CACHE_NAME, unless = "#result == null")
     public AuthorInfoDto getAuthor(Long userId) {
         QueryWrapper<AuthorInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper
@@ -39,4 +44,9 @@ public class AuthorInfoCacheManager {
                 .build();
     }
 
+    @CacheEvict(cacheManager = CacheConsts.REDIS_CACHE_MANAGER,
+            value = CacheConsts.AUTHOR_INFO_CACHE_NAME)
+    public void evictAuthorCache() {
+        // 调用此方法自动清除作家信息的缓存
+    }
 }

@@ -1,7 +1,11 @@
 package com.loong.novel.service;
 
+import com.loong.novel.core.common.req.PageReqDto;
+import com.loong.novel.core.common.resp.PageRespDto;
 import com.loong.novel.core.common.resp.RestResp;
+import com.loong.novel.dto.req.BookAddReqDto;
 import com.loong.novel.dto.resp.BookCategoryRespDto;
+import com.loong.novel.dto.resp.BookInfoRespDto;
 import com.loong.novel.dto.resp.BookRankRespDto;
 
 import java.util.List;
@@ -18,4 +22,8 @@ public interface IBookService {
     RestResp<List<BookRankRespDto>> listUpdateRankBooks();
 
     RestResp<List<BookCategoryRespDto>> listCategory(Integer workDirection);
+
+    RestResp<PageRespDto<BookInfoRespDto>> listAuthorBooks(PageReqDto dto);
+
+    RestResp<Void> saveBook(BookAddReqDto dto);
 }
