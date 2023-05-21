@@ -4,9 +4,9 @@ import com.loong.novel.core.common.req.PageReqDto;
 import com.loong.novel.core.common.resp.PageRespDto;
 import com.loong.novel.core.common.resp.RestResp;
 import com.loong.novel.dto.req.BookAddReqDto;
-import com.loong.novel.dto.resp.BookCategoryRespDto;
-import com.loong.novel.dto.resp.BookInfoRespDto;
-import com.loong.novel.dto.resp.BookRankRespDto;
+import com.loong.novel.dto.req.ChapterAddReqDto;
+import com.loong.novel.dto.req.ChapterUpdateReqDto;
+import com.loong.novel.dto.resp.*;
 
 import java.util.List;
 
@@ -26,4 +26,14 @@ public interface IBookService {
     RestResp<PageRespDto<BookInfoRespDto>> listAuthorBooks(PageReqDto dto);
 
     RestResp<Void> saveBook(BookAddReqDto dto);
+
+    RestResp<PageRespDto<BookChapterRespDto>> listBookChapters(Long bookId, PageReqDto dto);
+
+    RestResp<Void> saveBookChapter(ChapterAddReqDto dto);
+
+    RestResp<ChapterContentRespDto> getBookChapter(Long chapterId);
+
+    RestResp<Void> updateBookChapter(Long chapterId, ChapterUpdateReqDto dto);
+
+    RestResp<Void> deleteBookChapter(Long chapterId);
 }
