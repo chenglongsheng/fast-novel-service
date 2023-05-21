@@ -1,6 +1,7 @@
 package com.loong.novel.service;
 
 import com.loong.novel.core.common.resp.RestResp;
+import com.loong.novel.dto.resp.BookCategoryRespDto;
 import com.loong.novel.dto.resp.BookRankRespDto;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface IBookService {
     RestResp<List<BookRankRespDto>> listNewestRankBooks();
 
     RestResp<List<BookRankRespDto>> listUpdateRankBooks();
+
+    RestResp<List<BookCategoryRespDto>> listCategory(Integer workDirection);
 }
