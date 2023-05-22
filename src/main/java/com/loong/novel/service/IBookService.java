@@ -6,6 +6,7 @@ import com.loong.novel.core.common.resp.RestResp;
 import com.loong.novel.dto.req.BookAddReqDto;
 import com.loong.novel.dto.req.ChapterAddReqDto;
 import com.loong.novel.dto.req.ChapterUpdateReqDto;
+import com.loong.novel.dto.req.UserCommentReqDto;
 import com.loong.novel.dto.resp.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -53,4 +54,12 @@ public interface IBookService {
     RestResp<Long> getPreChapterId(Long chapterId);
 
     RestResp<Long> getNextChapterId(Long chapterId);
+
+    RestResp<Void> saveComment(UserCommentReqDto dto);
+
+    RestResp<Void> updateComment(Long userId, Long id, String content);
+
+    RestResp<Void> deleteComment(Long userId, Long id);
+
+    RestResp<PageRespDto<UserCommentRespDto>> listComments(Long userId, PageReqDto pageReqDto);
 }

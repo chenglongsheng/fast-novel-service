@@ -2,6 +2,7 @@ package com.loong.novel.controller.front;
 
 import com.loong.novel.core.auth.UserHolder;
 import com.loong.novel.core.common.req.PageReqDto;
+import com.loong.novel.core.common.resp.PageRespDto;
 import com.loong.novel.core.common.resp.RestResp;
 import com.loong.novel.core.constant.ApiRouterConsts;
 import com.loong.novel.core.constant.SystemConfigConsts;
@@ -9,9 +10,11 @@ import com.loong.novel.dto.req.UserCommentReqDto;
 import com.loong.novel.dto.req.UserInfoUptReqDto;
 import com.loong.novel.dto.req.UserLoginReqDto;
 import com.loong.novel.dto.req.UserRegisterReqDto;
+import com.loong.novel.dto.resp.UserCommentRespDto;
 import com.loong.novel.dto.resp.UserInfoRespDto;
 import com.loong.novel.dto.resp.UserLoginRespDto;
 import com.loong.novel.dto.resp.UserRegisterRespDto;
+import com.loong.novel.service.IBookService;
 import com.loong.novel.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,6 +38,9 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IBookService bookService;
 
     /**
      * 用户注册接口
@@ -94,48 +100,50 @@ public class UserController {
     /**
      * 发表评论接口
      */
-//    @Operation(summary = "发表评论接口")
-//    @PostMapping("comment")
-//    public RestResp<Void> comment(@Valid @RequestBody UserCommentReqDto dto) {
-//        dto.setUserId(UserHolder.getUserId());
-//        return bookService.saveComment(dto);
-//    }
+    @Operation(summary = "发表评论接口")
+    @PostMapping("comment")
+    public RestResp<Void> comment(@Valid @RequestBody UserCommentReqDto dto) {
+        dto.setUserId(UserHolder.getUserId());
+        return bookService.saveComment(dto);
+    }
 
     /**
      * 修改评论接口
      */
-//    @Operation(summary = "修改评论接口")
-//    @PutMapping("comment/{id}")
-//    public RestResp<Void> updateComment(@Parameter(description = "评论ID") @PathVariable Long id,
-//                                        String content) {
-//        return bookService.updateComment(UserHolder.getUserId(), id, content);
-//    }
+    @Operation(summary = "修改评论接口")
+    @PutMapping("comment/{id}")
+    public RestResp<Void> updateComment(
+            @Parameter(description = "评论ID")
+            @PathVariable Long id, String content
+    ) {
+        return bookService.updateComment(UserHolder.getUserId(), id, content);
+    }
 
     /**
      * 删除评论接口
      */
-//    @Operation(summary = "删除评论接口")
-//    @DeleteMapping("comment/{id}")
-//    public RestResp<Void> deleteComment(@Parameter(description = "评论ID") @PathVariable Long id) {
-//        return bookService.deleteComment(UserHolder.getUserId(), id);
-//    }
+    @Operation(summary = "删除评论接口")
+    @DeleteMapping("comment/{id}")
+    public RestResp<Void> deleteComment(@Parameter(description = "评论ID") @PathVariable Long id) {
+        return bookService.deleteComment(UserHolder.getUserId(), id);
+    }
 
     /**
      * 查询书架状态接口 0-不在书架 1-已在书架
      */
-//    @Operation(summary = "查询书架状态接口")
-//    @GetMapping("bookshelf_status")
-//    public RestResp<Integer> getBookshelfStatus(@Parameter(description = "小说ID") String bookId) {
-//        return userService.getBookshelfStatus(UserHolder.getUserId(), bookId);
-//    }
+    @Operation(summary = "查询书架状态接口")
+    @GetMapping("bookshelf_status")
+    public RestResp<Integer> getBookshelfStatus(@Parameter(description = "小说ID") String bookId) {
+        return userService.getBookshelfStatus(UserHolder.getUserId(), bookId);
+    }
 
     /**
      * 分页查询评论
      */
-//    @Operation(summary = "查询会员评论列表接口")
-//    @GetMapping("comments")
-//    public RestResp<PageRespDto<UserCommentRespDto>> listComments(PageReqDto pageReqDto) {
-//        return bookService.listComments(UserHolder.getUserId(), pageReqDto);
-//    }
+    @Operation(summary = "查询会员评论列表接口")
+    @GetMapping("comments")
+    public RestResp<PageRespDto<UserCommentRespDto>> listComments(PageReqDto pageReqDto) {
+        return bookService.listComments(UserHolder.getUserId(), pageReqDto);
+    }
 
 }

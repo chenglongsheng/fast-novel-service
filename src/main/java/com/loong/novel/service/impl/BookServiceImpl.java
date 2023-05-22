@@ -18,6 +18,7 @@ import com.loong.novel.dto.AuthorInfoDto;
 import com.loong.novel.dto.req.BookAddReqDto;
 import com.loong.novel.dto.req.ChapterAddReqDto;
 import com.loong.novel.dto.req.ChapterUpdateReqDto;
+import com.loong.novel.dto.req.UserCommentReqDto;
 import com.loong.novel.dto.resp.*;
 import com.loong.novel.manager.cache.*;
 import com.loong.novel.manager.dao.UserDaoManager;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -486,6 +488,75 @@ public class BookServiceImpl implements IBookService {
                         .map(BookChapter::getId)
                         .orElse(null)
         );
+    }
+
+    @Override
+    public RestResp<Void> saveComment(UserCommentReqDto dto) {
+        // 校验用户是否已发表评论
+        QueryWrapper<BookComment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(DatabaseConsts.BookCommentTable.COLUMN_USER_ID, dto.getUserId())
+                .eq(DatabaseConsts.BookCommentTable.COLUMN_BOOK_ID, dto.getBookId());
+        if (bookCommentMapper.selectCount(queryWrapper) > 0) {
+            // 用户已发表评论
+            return RestResp.fail(ErrorCodeEnum.USER_COMMENTED);
+        }
+        BookComment bookComment = new BookComment();
+        bookComment.setBookId(dto.getBookId());
+        bookComment.setUserId(dto.getUserId());
+        bookComment.setCommentContent(dto.getCommentContent());
+        bookComment.setCreateTime(LocalDateTime.now());
+        bookComment.setUpdateTime(LocalDateTime.now());
+        bookCommentMapper.insert(bookComment);
+        return RestResp.ok();
+    }
+
+    @Override
+    public RestResp<Void> updateComment(Long userId, Long id, String content) {
+        QueryWrapper<BookComment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(DatabaseConsts.CommonColumnEnum.ID.getName(), id)
+                .eq(DatabaseConsts.BookCommentTable.COLUMN_USER_ID, userId);
+        BookComment bookComment = new BookComment();
+        bookComment.setCommentContent(content);
+        bookCommentMapper.update(bookComment, queryWrapper);
+        return RestResp.ok();
+    }
+
+    @Override
+    public RestResp<Void> deleteComment(Long userId, Long id) {
+        QueryWrapper<BookComment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(DatabaseConsts.CommonColumnEnum.ID.getName(), id)
+                .eq(DatabaseConsts.BookCommentTable.COLUMN_USER_ID, userId);
+        bookCommentMapper.delete(queryWrapper);
+        return RestResp.ok();
+    }
+
+    @Override
+    public RestResp<PageRespDto<UserCommentRespDto>> listComments(Long userId, PageReqDto pageReqDto) {
+        IPage<BookComment> page = new Page<>();
+        page.setCurrent(pageReqDto.getPageNum());
+        page.setSize(pageReqDto.getPageSize());
+        QueryWrapper<BookComment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(DatabaseConsts.BookCommentTable.COLUMN_USER_ID, userId)
+                .orderByDesc(DatabaseConsts.CommonColumnEnum.UPDATE_TIME.getName());
+        IPage<BookComment> bookCommentPage = bookCommentMapper.selectPage(page, queryWrapper);
+        List<BookComment> comments = bookCommentPage.getRecords();
+        if (!CollectionUtils.isEmpty(comments)) {
+            List<Long> bookIds = comments.stream().map(BookComment::getBookId).toList();
+            QueryWrapper<BookInfo> bookInfoQueryWrapper = new QueryWrapper<>();
+            bookInfoQueryWrapper.in(DatabaseConsts.CommonColumnEnum.ID.getName(), bookIds);
+            Map<Long, BookInfo> bookInfoMap = bookInfoMapper.selectList(bookInfoQueryWrapper).stream()
+                    .collect(Collectors.toMap(BookInfo::getId, Function.identity()));
+            return RestResp.ok(PageRespDto.of(pageReqDto.getPageNum(), pageReqDto.getPageSize(), page.getTotal(),
+                    comments.stream().map(v -> UserCommentRespDto.builder()
+                            .commentContent(v.getCommentContent())
+                            .commentBook(bookInfoMap.get(v.getBookId()).getBookName())
+                            .commentBookPic(bookInfoMap.get(v.getBookId()).getPicUrl())
+                            .commentTime(v.getCreateTime())
+                            .build()).toList()));
+
+        }
+        return RestResp.ok(PageRespDto.of(pageReqDto.getPageNum(), pageReqDto.getPageSize(), page.getTotal(),
+                Collections.emptyList()));
     }
 
 }

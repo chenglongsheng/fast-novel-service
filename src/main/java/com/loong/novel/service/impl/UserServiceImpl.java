@@ -1,14 +1,17 @@
 package com.loong.novel.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.loong.novel.core.common.constant.CommonConsts;
 import com.loong.novel.core.common.constant.ErrorCodeEnum;
 import com.loong.novel.core.common.exception.BusinessException;
 import com.loong.novel.core.common.resp.RestResp;
 import com.loong.novel.core.constant.DatabaseConsts;
 import com.loong.novel.core.constant.SystemConfigConsts;
 import com.loong.novel.core.util.JwtUtils;
+import com.loong.novel.dao.entity.UserBookshelf;
 import com.loong.novel.dao.entity.UserFeedback;
 import com.loong.novel.dao.entity.UserInfo;
+import com.loong.novel.dao.mapper.UserBookshelfMapper;
 import com.loong.novel.dao.mapper.UserFeedbackMapper;
 import com.loong.novel.dao.mapper.UserInfoMapper;
 import com.loong.novel.dto.req.UserInfoUptReqDto;
@@ -46,6 +49,9 @@ public class UserServiceImpl implements IUserService {
 
     @Resource
     private UserFeedbackMapper userFeedbackMapper;
+
+    @Resource
+    private UserBookshelfMapper userBookshelfMapper;
 
     @Override
     public RestResp<UserRegisterRespDto> register(UserRegisterReqDto dto) {
@@ -152,5 +158,17 @@ public class UserServiceImpl implements IUserService {
                 .eq(DatabaseConsts.UserFeedBackTable.COLUMN_USER_ID, userId);
         userFeedbackMapper.delete(queryWrapper);
         return RestResp.ok();
+    }
+
+    @Override
+    public RestResp<Integer> getBookshelfStatus(Long userId, String bookId) {
+        QueryWrapper<UserBookshelf> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(DatabaseConsts.UserBookshelfTable.COLUMN_USER_ID, userId)
+                .eq(DatabaseConsts.UserBookshelfTable.COLUMN_BOOK_ID, bookId);
+        return RestResp.ok(
+                userBookshelfMapper.selectCount(queryWrapper) > 0
+                        ? CommonConsts.YES
+                        : CommonConsts.NO
+        );
     }
 }

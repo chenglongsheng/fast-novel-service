@@ -24,4 +24,6 @@ public interface IUserService {
     RestResp<Void> saveFeedback(Long userId, String content);
 
     RestResp<Void> deleteFeedback(Long userId, Long id);
+
+    RestResp<Integer> getBookshelfStatus(Long userId, String bookId);
 }
